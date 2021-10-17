@@ -1,0 +1,137 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Spring Boot Thymeleaf Application - Bootstrap Autocomplete</title>
+
+    <link th:rel="stylesheet" th:href="@{assets/select2-develop/dist/css/select2.css}"/>
+    <link th:rel="stylesheet" th:href="@{assets/select2-bootstrap4-theme-master/dist/select2-bootstrap4.css}"/>
+    <link th:rel="stylesheet" th:href="@{webjars/bootstrap/4.0.0-2/css/bootstrap.min.css} "/>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+    <style>
+        div.item {
+            vertical-align: top;
+            display: inline-block;
+        }
+        div.item.second{
+            float: right;
+        }
+        .table{
+            width: 550px;
+        }
+        hr{
+            padding: 20px;
+        }
+    </style>
+
+</head>
+<body>
+
+<!--
+<div th:if="${message}">
+    <h2 th:text="${message}"/>
+</div>
+-->
+
+<!--
+<div class="d-flex justify-content-center">
+    <form method="POST" enctype="multipart/form-data" action="/">
+        <div class="form-group">
+            <input type="file" name="file" class="form-control-file" id="exampleFormControlFile1">
+        </div>
+
+        <input type="submit" value="Upload" class="btn btn-primary"/>
+
+    </form>
+</div>
+-->
+
+<div class="container">
+    <form method="POST" enctype="multipart/form-data" action="/">
+        <div class="form-group">
+            <label><strong>Upload File</strong></label>
+            <div class="custom-file">
+                <input type="file" name="file" class="form-control-file" id="exampleFormControlFile1">
+                <label class="custom-file-label" for="exampleFormControlFile1">Choose file</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <button type="submit" name="upload" value="upload" id="upload" class="btn btn-block btn-dark"><i class="fa fa-fw fa-upload"></i> Upload</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    $(document).ready(function() {
+        $('input[type="file"]').on("change", function() {
+            let filenames = [];
+            let files = this.files;
+            if (files.length > 1) {
+                filenames.push("Total Files (" + files.length + ")");
+            } else {
+                for (let i in files) {
+                    if (files.hasOwnProperty(i)) {
+                        filenames.push(files[i].name);
+                    }
+                }
+            }
+            $(this)
+                .next(".custom-file-label")
+                .html(filenames.join(","));
+        });
+    });
+</script>
+
+<!--
+<div>
+    <ul>
+        <li th:each="file : ${files}">
+            <iframe th:src="'https://docs.google.com/gview?url=' + ${file} + '&embedded=true'"
+                    style="width:500px; height:400px;" frameborder="0"></iframe>
+        </li>
+    </ul>
+</div>
+-->
+
+
+<div class="container">
+    <div class="frame" th:each="file : ${products}">
+        <div class="item first">
+            <iframe th:src="'https://docs.google.com/viewer?url=' + ${file.key} + '&embedded=true'"
+                    style="width:500px; height:400px;" frameborder="0"></iframe>
+        </div>
+        <div class="item second">
+            <table class="table">
+                <thead class="thead-light">
+                <tr>
+                    <th scope="col">Product</th>
+                    <th scope="col">Unit</th>
+                    <th scope="col">Number</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Delivery region</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${file.value.empty}">
+                    <td colspan="2"> No Products Available</td>
+                </tr>
+                <tr th:each="product : ${file.value}" scope="row">
+                    <td><span th:text="${product['product']}"> product </span></td>
+                    <td><span th:text="${product['unit']}">unit </span></td>
+                    <td><span th:text="${product['number']}">number </span></td>
+                    <td><span th:text="${product['price']}">price </span></td>
+                    <td><span th:text="${product['delivery region']}">delivery region</span></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <hr>
+
+
+    </div>
+</div>
+
+
+</body>
+</html>
