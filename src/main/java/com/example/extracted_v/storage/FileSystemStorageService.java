@@ -57,6 +57,8 @@ public class FileSystemStorageService implements StorageService {
             if (file.isEmpty()) {
                 throw new StorageException("Failed to store empty file " + file.getOriginalFilename());
             }
+
+            Files.copy(file.getInputStream(), this.rootDocumentLocation.resolve(file.getOriginalFilename()));
 			/*
 			HttpEntity entity = MultipartEntityBuilder.create()
 					.addPart("file", new FileBody(file))
@@ -71,11 +73,12 @@ public class FileSystemStorageService implements StorageService {
 			 */
             HttpClient client = new DefaultHttpClient();
 
-            HttpGet get = new HttpGet("http://localhost:8080/json");
-            HttpParams params = new BasicHttpParams();
-            params.setParameter("filePath", file.getOriginalFilename());
-            get.setParams(params);
-
+            HttpGet get = new HttpGet("http://localhost:5000/process?filePath=" + file.getOriginalFilename());
+//            HttpParams params = new BasicHttpParams();
+//            params.setParameter("filePath", file.getOriginalFilename());
+            System.out.println("file:" + file.getOriginalFilename());
+//            get.setParams(params);
+//
             HttpResponse response1;
             response1 = client.execute(get);
 
@@ -102,9 +105,6 @@ public class FileSystemStorageService implements StorageService {
 
             jsonFile.flush();
             jsonFile.close();
-
-
-            Files.copy(file.getInputStream(), this.rootDocumentLocation.resolve(file.getOriginalFilename()));
 
         } catch (IOException e) {
             throw new StorageException("Failed to store file " + file.getOriginalFilename(), e);
