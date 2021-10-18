@@ -16,6 +16,8 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
+import org.apache.http.util.EntityUtils;
+import org.apache.tomcat.util.json.JSONParser;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -82,25 +85,30 @@ public class FileSystemStorageService implements StorageService {
             HttpResponse response1;
             response1 = client.execute(get);
 
+
             String str;
             StringBuilder sb = new StringBuilder();
-            HttpEntity entity = response1.getEntity();
-            if (entity != null) {
-                DataInputStream in;
-                in = new DataInputStream(entity.getContent());
-                while ((str = in.readLine()) != null) {
-                    sb.append(str);
-                }
-                in.close();
-            }
+//            HttpEntity entity = response1.getEntity();
+//            if (entity != null) {
+//                DataInputStream in;
+//                in = new DataInputStream(entity.getContent());
+//                while ((str = in.readLine()) != null) {
+//                    sb.append(str);
+//                }
+//                in.close();
+//            }
 
-            System.out.println(sb);
-
-            JSONArray jsonArray = new JSONArray("[{\"product\": \"milk\", \"unit\": \"л\", \"number\": 3, \"price\": 12, \"delivery region\": \"Samara\"}, {\"product\": \"laptop\", \"unit\": \"item\", \"number\": 1, \"price\": 120000, \"delivery region\": \"Samara\"}]");
+            String st = URLDecoder.decode(EntityUtils.toString(response1.getEntity(), "UTF-8"), "UTF-8");
 
 
-            FileWriter jsonFile = new FileWriter(String.valueOf(this.rootJsonLocation.resolve(file.getName() + ".json")));
-            System.out.println("jsonFile: " + this.rootJsonLocation.resolve(file.getName()));
+            System.out.println(st);
+
+
+            JSONArray jsonArray = new JSONArray(st);
+
+
+            FileWriter jsonFile = new FileWriter(String.valueOf(rootJsonLocation + "\\" + file.getOriginalFilename().replaceFirst("[.][^.]+$", "") + ".json"));
+            System.out.println("jsonFile: " + file.getOriginalFilename().replaceFirst("[.][^.]+$", ""));
             jsonFile.write(jsonArray.toString());
 
             jsonFile.flush();
