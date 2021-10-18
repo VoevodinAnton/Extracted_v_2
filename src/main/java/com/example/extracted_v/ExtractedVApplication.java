@@ -25,5 +25,4 @@ public class ExtractedVApplication {
             storageService.init();
         };
     }
-
 }
